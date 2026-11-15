@@ -1,114 +1,133 @@
-# 🧓 ELDERLY360
+# ELDERLY360
 
-> **Noticing when elderly care quietly starts slipping.**  
-> Proactive care continuity, routine drift detection, transparent explainable scoring, and automated multi-tier escalation.
+**Proactive elderly care continuity: noticing when care quietly slips.**
 
----
-
-## 📌 Problem Statement
-
-Most senior care apps are merely glorified alarms: they beep to remind a senior to swallow a pill. But in real-world geriatric care, **deterioration happens quietly before emergencies strike**:
-- A senior starts feeling fatigued and repeatedly misses their 8:30 PM diabetes dose.
-- Morning garden walks slip from 6 days a week to 1 or 2 due to onset of mild joint stiffness.
-- Family members living in another city or working busy jobs have no idea care patterns are decaying until an unexpected emergency room hospitalization occurs.
+🔗 **Live demo:** <your-vercel-link>
+💻 **Repository:** https://github.com/Rinki781/Elderly360
+🏆 Built for the **Makers Need More (MnM)** hackathon in 7 hours.
 
 ---
 
-## 💡 The Solution: ELDERLY360
+## The Problem
 
-**ELDERLY360** transforms reactive emergency alarms into **proactive care intelligence**:
-1. **Explainable Care Continuity Score (0–100)**: Mathematically transparent composite score ($50\%$ Meds + $25\%$ Tasks + $15\%$ Appointments + $10\%$ Check-ins), weighted toward recent days with plain-English reasons for score changes.
-2. **Routine Drift Detection Engine**: Compares the last 7 days against a personalized 21-day baseline per activity and time-slot. Instantly detects when evening adherence drops by $\ge 30\%$ or an activity ceases.
-3. **Automated Escalation Ladder**: Four-step progressive safety ladder: Senior gentle audio reminder $\rightarrow$ Caretaker alert $\rightarrow$ Family urgent SMS/push $\rightarrow$ Emergency SOS protocol.
-4. **Senior-Controlled Privacy & Senior Mode**: Senior has granular autonomy to toggle what each family member or caretaker can see (medicines, scores, location, records), enforced in the data layer. Includes a giant-button, high-contrast Senior Mode and a bilingual Web Speech voice assistant in Hindi (`hi-IN`) and English (`en-IN`).
-5. **Healthcare Ecosystem**: Emergency SOS with live Geolocation coordinates, OpenStreetMap doctor/clinic locator, digital Care Passport with Paramedic Emergency QR code, and server-side **Google Gemini 1.5** clinical summaries.
+<paste the exact problem statement you chose>
 
----
+Most elderly-care apps only send reminders. Nobody notices when care slowly breaks down: evening doses skipped, walks missed, check-ins fading. Families find out only after an emergency.
 
-## 🏗️ Architecture Diagram
+## Our Solution
+
+ELDERLY360 brings the **senior, family members and caretakers** into one ecosystem, and adds a **Care Intelligence** layer that detects problems early:
+
+- **Care Continuity Score (0-100):** an explainable score that tells you *why* it changed, in plain language.
+- **Routine Drift Detection:** compares the last 7 days with the previous 21-day baseline per activity and time slot.
+- **Smart Escalation Ladder:** missed dose → senior reminder → caretaker alert → family alert → SOS.
+- **Senior-controlled privacy:** the senior decides what each family member can see.
+
+## Key Features
+
+| Area | Features |
+|---|---|
+| Medication | Schedules, taken/skip/snooze, adherence history, refill prediction |
+| Care tasks | Daily tasks assigned to the senior or caretaker, vitals logging |
+| Care Intelligence | Explainable Continuity Score, 30-day trend, drift cards, escalation timeline |
+| Privacy and consent | Per-family-member visibility controls |
+| Accessibility | Simplified Senior Mode, large buttons, Hindi/English voice assistant |
+| Emergency | One-tap SOS, emergency contacts, Care Passport QR |
+| Healthcare ecosystem | Nearby doctors/hospitals on an OpenStreetMap map, appointment management |
+| Digital Care Passport | Conditions, allergies, medicines, records, emergency contacts |
+| AI | Gemini-powered doctor-visit summary and care summaries |
+| Roles | Senior, Family, Caretaker views with a role switcher |
+
+## How the Care Continuity Score Works
+
+| Factor | Weight |
+|---|---|
+| Medicine adherence | 50% |
+| Daily care tasks and vitals | 25% |
+| Doctor appointment attendance | 15% |
+| Check-in consistency | 10% |
+
+Recent days are weighted more heavily. Drift is flagged when an activity's completion in the last 7 days drops significantly against its 21-day baseline.
+
+## Architecture
 
 ```mermaid
 flowchart TD
-    subgraph ClientLayer["🖥️ Frontend & Accessibility Layer (Next.js 14 App Router)"]
-        UI["Tailwind CSS + Lucide Icons + Responsive (375px+ Mobile)"]
-        Recharts["Recharts 30-Day Trend Visualizations"]
-        SeniorMode["Simplified High-Contrast Senior Mode (Large Text & Giant Actions)"]
-        VoiceAssist["Web Speech API Assistant (Hindi hi-IN / English en-IN)"]
-        SOS["Emergency SOS with Geolocation API & One-Tap Helplines"]
-        Passport["Digital Care Passport with Emergency QR Code & PDF Export"]
-    end
-
-    subgraph StateAndIntelligence["🧠 Local Store & Care Intelligence Core"]
-        Store["Universal App Context & Local Storage Layer"]
-        ScoreEngine["Care Continuity Score Calculator (50% Meds, 25% Tasks, 15% Appts, 10% Check-ins)"]
-        DriftDetector["Routine Drift Engine (7-Day Rolling vs 21-Day Baseline)"]
-        EscalationLadder["4-Tier Escalation Ladder (Senior -> Nurse -> Family -> SOS)"]
-        PrivacyMatrix["Data Layer Privacy Consent Gate (Per-Category Enforcement)"]
-    end
-
-    subgraph ServerBackend["☁️ Server API & External Services"]
-        GeminiRoute["Server Route: /api/gemini (Gemini 1.5 Flash)"]
-        GeminiDeterministic["Guaranteed Deterministic Clinical Summary Engine (Never Breaks)"]
-        OSM["Leaflet + OpenStreetMap Overpass (No-Key Doctor Locator)"]
-    end
-
-    UI --> Store
-    SeniorMode --> Store
-    VoiceAssist --> Store
-    Passport --> Store
-    SOS --> Store
-
-    Store --> ScoreEngine
-    Store --> DriftDetector
-    Store --> EscalationLadder
-    Store --> PrivacyMatrix
-
-    ScoreEngine --> Recharts
-    DriftDetector --> UI
-    EscalationLadder --> UI
-
-    Store --> GeminiRoute
-    GeminiRoute --> GeminiDeterministic
-    UI --> OSM
+    U[Senior / Family / Caretaker] --> UI[Next.js App Router UI]
+    UI --> CTX[Shared state context]
+    CTX --> CI[Care Intelligence engine<br/>score + drift + escalation]
+    CTX --> SEED[Seeded 30-day demo data]
+    UI --> API[/api/gemini route/]
+    API --> G[Gemini API]
+    UI --> MAP[OpenStreetMap map]
+    UI --> VOICE[Web Speech API<br/>Hindi + English]
 ```
 
----
+## Tech Stack
 
+- **Framework:** Next.js (App Router), React, TypeScript
+- **Styling:** Tailwind CSS
+- **AI:** Google Gemini, called from a server-side API route
+- **Maps:** OpenStreetMap
+- **Voice:** Web Speech API (hi-IN, en-IN)
+- **Deployment:** Vercel
 
-## 💻 Getting Started
+## Run Locally
 
-### 1. Clone & Install Dependencies
 ```bash
-git clone <repo-url>
-cd ELDERY360
+git clone https://github.com/Rinki781/Elderly360.git
+cd Elderly360
 npm install
-```
-
-### 2. Configure Environment Variables
-Copy `.env.example` to `.env.local`:
-```bash
 cp .env.example .env.local
-```
-Add your optional Gemini API key:
-```env
-GEMINI_API_KEY=your_gemini_api_key_here
-```
-*(Note: If `GEMINI_API_KEY` is not provided, the app uses its built-in deterministic clinical summary engine, so the application remains 100% functional during judging).*
-
-### 3. Run the Development Server
-```bash
+# add your GEMINI_API_KEY to .env.local
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### 4. Build for Production
-```bash
-npm run build
-npm run start
+Open `http://localhost:3000`.
+
+### Environment Variables
+
+| Variable | Purpose |
+|---|---|
+| `GEMINI_API_KEY` | Gemini-powered doctor-visit summaries (a template summary is used if it is missing) |
+
+## Demo Walkthrough (for judges)
+
+1. Open the live link and click one of the roles under **Judging Demo Mode**. No signup is needed.
+2. Use **View As** to switch between Senior (Ramesh), Family (Aarav) and Caretaker (Priya).
+3. Open **Care Score (30d)** to see the explainable score and the recent slip.
+4. Open **Routine Drift (3)** to see the evening-dose drift cards.
+5. Press **Simulate Time** to advance the demo clock and watch the **Escalation Ladder** progress.
+6. Open **Privacy & Consent** to control what family members can see.
+7. Try **Senior Mode**, the **Voice Assistant**, **Emergency SOS**, **Care Passport (QR)** and **Doctor Visits & AI Brief**.
+
+The demo uses 30 days of seeded data for Ramesh Sharma (72), with an intentional drop in evening adherence over the last 6 days.
+
+## Project Structure
+
+```
+app/            Next.js pages, layout and the Gemini API route
+components/     Feature components (dashboard, medication, drift, SOS, passport, ...)
+context/        Shared application state
+lib/            Care intelligence engine and seed data
+types/          TypeScript types
 ```
 
----
+## Known Limitations
 
-## 📄 License
+- Demo data is seeded and stored on the client, so it is not synced across devices.
+- Doctor and hospital listings are sample data for the demo.
+- Escalation alerts are previews and do not send real SMS or WhatsApp messages.
+- ELDERLY360 supports care coordination and is **not a substitute for professional medical advice**.
 
-This project is licensed under the [MIT License](LICENSE).
+## Roadmap
+
+- Cloud database and authentication so invite codes work across devices
+- Real SMS/WhatsApp notifications
+- Wearable and device integration
+- More Indian languages
+- ABDM (Ayushman Bharat Digital Mission) integration
+
+## License
+
+MIT
