@@ -151,26 +151,6 @@ npm run start
 
 ---
 
-## 🧑‍⚖️ Hackathon Judging Walkthrough
-
-1. **One-Click Demo Launch**: On the landing page hero, click **"Senior Role (Ramesh Sharma, 72)"**, **"Family Role (Aarav, Son)"**, or **"Caretaker Role (Priya, Nurse)"**. No credentials needed.
-2. **Observe Routine Drift**: Notice the Care Continuity Score is **76/100** (-14 pts). Look at the explainable banner: *"Score fell 14 points: 4 of the last 6 evening doses missed, 2 walks skipped"*.
-3. **Inspect Routine Drift Cards**: Switch to the **Routine Drift** tab to see how evening Metformin and Atorvastatin dropped from $92\%$ to $35\%$ compared to the 21-day baseline.
-4. **Test Escalation with "Simulate Time"**: Click the yellow **"Simulate Time"** button in the header. Watch the active Escalation Ladder step advance from Senior Reminder $\rightarrow$ Caretaker Alert $\rightarrow$ Family SMS $\rightarrow$ SOS Protocol!
-5. **Senior Mode & Voice Assistant**: Click **"Senior Mode"** in the top bar to experience high-contrast large-text UI. Tap the microphone to speak voice commands in English or Hindi (*"What is my next medicine"* or *"मैंने दवाई ले ली"*).
-6. **Privacy Consent Matrix**: Switch to the **Privacy & Consent** tab to toggle visibility permissions per family member and see strict data layer enforcement.
-7. **Doctor Visit AI Brief & Care Passport**: Switch to the **Doctor Visits & AI Brief** tab to view the Gemini pre-consultation summary (with English/Hindi toggle) and print the Digital Care Passport with paramedic QR code.
-
----
-
-## ⚠️ Known Limitations
-
-1. **Web Speech Recognition Browser Support**: Speech recognition is fully supported in Google Chrome, Edge, and Chromium-based browsers. On browsers where speech recognition is disabled or microphone permissions are denied, the UI provides guaranteed one-click quick voice buttons that simulate each voice command and trigger text-to-speech audio responses.
-2. **Offline Leaflet Maps**: If the client is disconnected from the internet, OpenStreetMap tiles cannot load live map tiles, but the application automatically displays the complete fallback directory of nearby hospitals with phone numbers and distances.
-3. **SMS Gateway Simulation**: Escalation Ladder step 3 simulates dispatching urgent SMS alerts via the application's notification engine and browser alerts without incurring third-party SMS telephony fees during hackathon evaluation.
-
----
-
 ## 📄 License
 
 This project is licensed under the [MIT License](LICENSE).
