@@ -4,6 +4,9 @@ import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
 import { MedicationManager } from './MedicationManager';
 import { TaskManager } from './TaskManager';
+import { CareContinuityScoreView } from './CareContinuityScoreView';
+import { RoutineDriftView } from './RoutineDriftView';
+import { EscalationLadderView } from './EscalationLadderView';
 import {
   HeartPulse,
   Activity,
@@ -19,12 +22,12 @@ import {
   TrendingDown,
   Sparkles,
   Zap,
+  TrendingUp,
 } from 'lucide-react';
 
 interface DashboardProps {
   onOpenInviteModal: () => void;
   onOpenNotifications: () => void;
-  onNavigateToTab?: (tab: string) => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
@@ -43,7 +46,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
     canViewCategory,
   } = useApp();
 
-  const [activeDashboardTab, setActiveDashboardTab] = useState<'schedule' | 'meds' | 'tasks'>('schedule');
+  const [activeTab, setActiveTab] = useState<
+    'overview' | 'score' | 'drift' | 'escalation' | 'meds' | 'tasks'
+  >('overview');
 
   // Adherence calculation for today
   const totalDoses = todayDoseLogs.length;
@@ -65,7 +70,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           <div>
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-xs font-bold uppercase tracking-wider bg-elder-500/20 text-elder-300 border border-elder-500/30 px-2 py-0.5 rounded">
-                Live Perspective: {currentUser.role.toUpperCase()}
+                Active Perspective: {currentUser.role.toUpperCase()}
               </span>
               <span className="text-xs text-slate-300">
                 Logged in as <strong>{currentUser.name}</strong>
@@ -79,7 +84,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <p className="text-xs text-slate-300 mt-1 flex items-center gap-2 flex-wrap">
               <span>🩺 Conditions: {seniorProfile.conditions.join(', ')}</span>
               <span className="hidden sm:inline">•</span>
-              <span className="text-slate-400">Invite Code: <strong className="text-elder-200">{seniorProfile.inviteCode}</strong></span>
+              <span className="text-slate-400">
+                Invite Code: <strong className="text-elder-200">{seniorProfile.inviteCode}</strong>
+              </span>
             </p>
           </div>
         </div>
@@ -104,7 +111,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
       </div>
 
-      {/* Routine Drift Warning Banner (Phase 2 Preview) */}
+      {/* Routine Drift Warning Banner */}
       {driftAlerts.length > 0 && (
         <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-l-4 border-amber-500 p-4 rounded-xl shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-start gap-3">
@@ -125,12 +132,12 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </p>
             </div>
           </div>
-          <a
-            href="#intelligence"
+          <button
+            onClick={() => setActiveTab('drift')}
             className="text-xs font-bold text-amber-900 hover:text-amber-950 flex items-center gap-1 self-end sm:self-center bg-white px-3 py-1.5 rounded-lg border border-amber-200 shadow-2xs shrink-0"
           >
             Inspect Routine Drift <ChevronRight className="w-3 h-3" />
-          </a>
+          </button>
         </div>
       )}
 
@@ -155,19 +162,22 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </p>
             </div>
           </div>
-          <a
-            href="#escalation"
+          <button
+            onClick={() => setActiveTab('escalation')}
             className="text-xs font-bold text-rose-900 hover:text-rose-950 flex items-center gap-1 self-end sm:self-center bg-white px-3 py-1.5 rounded-lg border border-rose-200 shadow-2xs shrink-0"
           >
             View Escalation Timeline <ChevronRight className="w-3 h-3" />
-          </a>
+          </button>
         </div>
       )}
 
       {/* 3 Key Vitals & Status Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {/* Care Continuity Score Card */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+        <div
+          onClick={() => setActiveTab('score')}
+          className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between cursor-pointer hover:border-elder-400 transition"
+        >
           <div>
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
               <Activity className="w-3.5 h-3.5 text-elder-600" /> Care Continuity Score
@@ -199,7 +209,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         {/* Today's Medications Progress */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+        <div
+          onClick={() => setActiveTab('meds')}
+          className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between cursor-pointer hover:border-teal-400 transition"
+        >
           <div>
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
               <Pill className="w-3.5 h-3.5 text-teal-600" /> Today&apos;s Medications
@@ -222,7 +235,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         {/* Today's Tasks Progress */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+        <div
+          onClick={() => setActiveTab('tasks')}
+          className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between cursor-pointer hover:border-emerald-400 transition"
+        >
           <div>
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Daily Care Tasks
@@ -245,56 +261,101 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
       </div>
 
-      {/* Navigation Sub-Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+      {/* Navigation Tabs Bar */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none border-b border-slate-200">
         <button
-          onClick={() => setActiveDashboardTab('schedule')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
-            activeDashboardTab === 'schedule'
+          onClick={() => setActiveTab('overview')}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+            activeTab === 'overview'
               ? 'bg-slate-900 text-white shadow-xs'
               : 'text-slate-600 hover:bg-slate-100'
           }`}
         >
           <Calendar className="w-4 h-4" />
-          <span>Live Daily Timeline</span>
+          <span>Today&apos;s Live Schedule</span>
         </button>
 
         <button
-          onClick={() => setActiveDashboardTab('meds')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
-            activeDashboardTab === 'meds'
+          onClick={() => setActiveTab('score')}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+            activeTab === 'score'
+              ? 'bg-slate-900 text-white shadow-xs'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <Activity className="w-4 h-4 text-elder-500" />
+          <span>Care Continuity Score (30d)</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('drift')}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+            activeTab === 'drift'
+              ? 'bg-slate-900 text-white shadow-xs'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <TrendingDown className="w-4 h-4 text-amber-500" />
+          <span>Routine Drift ({driftAlerts.length})</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('escalation')}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+            activeTab === 'escalation'
+              ? 'bg-slate-900 text-white shadow-xs'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <ShieldAlert className="w-4 h-4 text-rose-500" />
+          <span>Escalation Ladder</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('meds')}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+            activeTab === 'meds'
               ? 'bg-slate-900 text-white shadow-xs'
               : 'text-slate-600 hover:bg-slate-100'
           }`}
         >
           <Pill className="w-4 h-4" />
-          <span>Medications & Refills</span>
+          <span>Medications & Refill</span>
         </button>
 
         <button
-          onClick={() => setActiveDashboardTab('tasks')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
-            activeDashboardTab === 'tasks'
+          onClick={() => setActiveTab('tasks')}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+            activeTab === 'tasks'
               ? 'bg-slate-900 text-white shadow-xs'
               : 'text-slate-600 hover:bg-slate-100'
           }`}
         >
           <CheckCircle2 className="w-4 h-4" />
-          <span>Care Tasks & Vitals</span>
+          <span>Care Tasks</span>
         </button>
       </div>
 
-      {/* Tab Contents */}
-      {activeDashboardTab === 'schedule' && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <MedicationManager />
-          <TaskManager />
+      {/* Tab Panels */}
+      {activeTab === 'overview' && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <MedicationManager />
+            <TaskManager />
+          </div>
+          <CareContinuityScoreView />
         </div>
       )}
 
-      {activeDashboardTab === 'meds' && <MedicationManager />}
+      {activeTab === 'score' && <CareContinuityScoreView />}
 
-      {activeDashboardTab === 'tasks' && <TaskManager />}
+      {activeTab === 'drift' && <RoutineDriftView />}
+
+      {activeTab === 'escalation' && <EscalationLadderView />}
+
+      {activeTab === 'meds' && <MedicationManager />}
+
+      {activeTab === 'tasks' && <TaskManager />}
     </div>
   );
 };
