@@ -14,6 +14,7 @@ import {
   X,
   Sparkles,
   Volume2,
+  Clock,
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -34,6 +35,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     notifications,
     seniorProfile,
     updateSeniorProfile,
+    formattedDemoTime,
   } = useApp();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -95,11 +97,17 @@ export const Navbar: React.FC<NavbarProps> = ({
               })}
             </div>
 
+            {/* Demo Clock Display */}
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-100 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700">
+              <Clock className="w-3.5 h-3.5 text-elder-600" />
+              <span>Demo time: <strong className="text-slate-900">{formattedDemoTime}</strong></span>
+            </div>
+
             {/* Simulate Time Button */}
             <button
               onClick={simulateTimeMissedDose}
               disabled={isSimulatingTime}
-              title="Fast-forward missed evening dose to trigger the automatic Escalation Ladder"
+              title="Advance demo time by 30 mins to test missed dose & escalation ladder"
               className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-bold shadow-xs hover:shadow-md transition active:scale-95 disabled:opacity-50"
             >
               <FastForward className={`w-3.5 h-3.5 ${isSimulatingTime ? 'animate-spin' : ''}`} />
@@ -203,25 +211,32 @@ export const Navbar: React.FC<NavbarProps> = ({
             ))}
           </div>
 
-          <div className="pt-2 border-t border-slate-100 flex items-center gap-2">
-            <button
-              onClick={() => {
-                simulateTimeMissedDose();
-                setMobileMenuOpen(false);
-              }}
-              className="flex-1 py-2 px-3 bg-amber-500 text-white rounded-lg text-xs font-bold text-center"
-            >
-              ⚡ Fast-Forward Time
-            </button>
-            <button
-              onClick={() => {
-                resetToDemoSeed();
-                setMobileMenuOpen(false);
-              }}
-              className="py-2 px-3 bg-slate-100 text-slate-700 rounded-lg text-xs font-bold"
-            >
-              ↺ Reset Seed
-            </button>
+          <div className="pt-2 border-t border-slate-100 space-y-2">
+            <div className="flex items-center justify-between text-xs text-slate-600 font-semibold px-1">
+              <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5 text-elder-600" /> Demo Time:</span>
+              <strong className="text-slate-900 bg-slate-100 px-2 py-0.5 rounded">{formattedDemoTime}</strong>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  simulateTimeMissedDose();
+                  setMobileMenuOpen(false);
+                }}
+                className="flex-1 py-2 px-3 bg-amber-500 text-white rounded-lg text-xs font-bold text-center"
+              >
+                ⚡ Simulate Time
+              </button>
+              <button
+                onClick={() => {
+                  resetToDemoSeed();
+                  setMobileMenuOpen(false);
+                }}
+                className="py-2 px-3 bg-slate-100 text-slate-700 rounded-lg text-xs font-bold"
+              >
+                ↺ Reset Seed
+              </button>
+            </div>
           </div>
         </div>
       )}

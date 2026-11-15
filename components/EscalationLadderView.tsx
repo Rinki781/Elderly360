@@ -96,7 +96,7 @@ export const EscalationLadderView: React.FC = () => {
           </p>
         </div>
 
-        {/* Timing Mode & Simulate Button */}
+        {/* Timing Mode */}
         <div className="flex items-center gap-2 flex-wrap">
           <div className="flex bg-slate-100 p-1 rounded-lg text-xs font-semibold">
             <button
@@ -116,16 +116,6 @@ export const EscalationLadderView: React.FC = () => {
               Demo Fast (1m/2m/3m)
             </button>
           </div>
-
-          <button
-            onClick={simulateTimeMissedDose}
-            disabled={isSimulatingTime}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-bold shadow-xs hover:shadow transition active:scale-95 disabled:opacity-50"
-            title="Fast forward missed evening dose to trigger the automatic Escalation Ladder"
-          >
-            <FastForward className="w-3.5 h-3.5" />
-            <span>Simulate Time</span>
-          </button>
         </div>
       </div>
 

@@ -153,15 +153,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <Users className="w-3.5 h-3.5" />
             <span>Care Circle</span>
           </button>
-
-          <button
-            onClick={simulateTimeMissedDose}
-            className="px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-1.5 active:scale-95"
-            title="Fast forward missed evening dose to test the Escalation Ladder"
-          >
-            <Zap className="w-3.5 h-3.5" />
-            <span>Simulate Time</span>
-          </button>
         </div>
       </div>
 
@@ -315,14 +306,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
       </div>
 
-      {/* Navigation Tabs Bar */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none border-b border-slate-200">
+      {/* Navigation Tabs Bar - Responsive Wrapped Navigation */}
+      <div className="flex flex-wrap items-center gap-2 pb-3 border-b border-slate-200">
         <button
           onClick={() => setActiveTab('overview')}
-          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+          className={`px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
             activeTab === 'overview'
               ? 'bg-slate-900 text-white shadow-xs'
-              : 'text-slate-600 hover:bg-slate-100'
+              : 'text-slate-600 hover:bg-slate-100 bg-white border border-slate-200'
           }`}
         >
           <Calendar className="w-3.5 h-3.5" />
@@ -331,10 +322,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
         <button
           onClick={() => setActiveTab('score')}
-          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+          className={`px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
             activeTab === 'score'
               ? 'bg-slate-900 text-white shadow-xs'
-              : 'text-slate-600 hover:bg-slate-100'
+              : 'text-slate-600 hover:bg-slate-100 bg-white border border-slate-200'
           }`}
         >
           <Activity className="w-3.5 h-3.5 text-elder-500" />
@@ -343,10 +334,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
         <button
           onClick={() => setActiveTab('drift')}
-          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+          className={`px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
             activeTab === 'drift'
               ? 'bg-slate-900 text-white shadow-xs'
-              : 'text-slate-600 hover:bg-slate-100'
+              : 'text-slate-600 hover:bg-slate-100 bg-white border border-slate-200'
           }`}
         >
           <TrendingDown className="w-3.5 h-3.5 text-amber-500" />
@@ -355,10 +346,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
         <button
           onClick={() => setActiveTab('escalation')}
-          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+          className={`px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
             activeTab === 'escalation'
               ? 'bg-slate-900 text-white shadow-xs'
-              : 'text-slate-600 hover:bg-slate-100'
+              : 'text-slate-600 hover:bg-slate-100 bg-white border border-slate-200'
           }`}
         >
           <ShieldAlert className="w-3.5 h-3.5 text-rose-500" />
@@ -367,10 +358,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
         <button
           onClick={() => setActiveTab('meds')}
-          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+          className={`px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
             activeTab === 'meds'
               ? 'bg-slate-900 text-white shadow-xs'
-              : 'text-slate-600 hover:bg-slate-100'
+              : 'text-slate-600 hover:bg-slate-100 bg-white border border-slate-200'
           }`}
         >
           <Pill className="w-3.5 h-3.5 text-teal-500" />
@@ -379,10 +370,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
         <button
           onClick={() => setActiveTab('tasks')}
-          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+          className={`px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
             activeTab === 'tasks'
               ? 'bg-slate-900 text-white shadow-xs'
-              : 'text-slate-600 hover:bg-slate-100'
+              : 'text-slate-600 hover:bg-slate-100 bg-white border border-slate-200'
           }`}
         >
           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
@@ -391,10 +382,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
         <button
           onClick={() => setActiveTab('appointments')}
-          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+          className={`px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
             activeTab === 'appointments'
               ? 'bg-slate-900 text-white shadow-xs'
-              : 'text-slate-600 hover:bg-slate-100'
+              : 'text-slate-600 hover:bg-slate-100 bg-white border border-slate-200'
           }`}
         >
           <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
@@ -403,10 +394,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
         <button
           onClick={() => setActiveTab('passport')}
-          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+          className={`px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
             activeTab === 'passport'
               ? 'bg-slate-900 text-white shadow-xs'
-              : 'text-slate-600 hover:bg-slate-100'
+              : 'text-slate-600 hover:bg-slate-100 bg-white border border-slate-200'
           }`}
         >
           <FileText className="w-3.5 h-3.5 text-sky-500" />
@@ -415,10 +406,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
         <button
           onClick={() => setActiveTab('locator')}
-          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+          className={`px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
             activeTab === 'locator'
               ? 'bg-slate-900 text-white shadow-xs'
-              : 'text-slate-600 hover:bg-slate-100'
+              : 'text-slate-600 hover:bg-slate-100 bg-white border border-slate-200'
           }`}
         >
           <Hospital className="w-3.5 h-3.5 text-teal-600" />
@@ -427,10 +418,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
         <button
           onClick={() => setActiveTab('privacy')}
-          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+          className={`px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
             activeTab === 'privacy'
               ? 'bg-slate-900 text-white shadow-xs'
-              : 'text-slate-600 hover:bg-slate-100'
+              : 'text-slate-600 hover:bg-slate-100 bg-white border border-slate-200'
           }`}
         >
           <Lock className="w-3.5 h-3.5 text-indigo-500" />

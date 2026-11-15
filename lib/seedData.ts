@@ -195,8 +195,12 @@ export function formatDate(d: Date): string {
 // Generate 30 days of realistic historical dose logs
 // Pattern: Baseline (days 1-24) high adherence (~93%).
 // Last 6 days: Evening medicines (Metformin 20:30 and Atorvastatin 21:00) drop to ~35%!
-export function generate30DaysDoseLogs(today: Date = new Date()): DoseLog[] {
+// Respects demo clock: for today (offset 0), doses after the demo clock (default 21:30) are pending.
+export function generate30DaysDoseLogs(today: Date = new Date(), demoHour: number = 21, demoMinute: number = 30): DoseLog[] {
   const logs: DoseLog[] = [];
+  const demoTimeStr = `${String(demoHour).padStart(2, '0')}:${String(demoMinute).padStart(2, '0')}`;
+
+  const isDoseDueToday = (timeStr: string) => timeStr <= demoTimeStr;
 
   for (let offset = 29; offset >= 0; offset--) {
     const logDate = new Date(today);
@@ -206,6 +210,7 @@ export function generate30DaysDoseLogs(today: Date = new Date()): DoseLog[] {
 
     // Med 1: Telmisartan 08:00
     const m1Taken = Math.random() > 0.05; // 95% adherence
+    const m1TodayStatus = isDoseDueToday('08:00') ? 'taken' : 'pending';
     logs.push({
       id: `log-m1-${dateStr}`,
       seniorId: DEMO_SENIOR_ID,
@@ -214,13 +219,14 @@ export function generate30DaysDoseLogs(today: Date = new Date()): DoseLog[] {
       dosage: '40 mg',
       scheduledDate: dateStr,
       scheduledTime: '08:00',
-      status: offset === 0 ? 'taken' : m1Taken ? 'taken' : 'missed',
+      status: offset === 0 ? m1TodayStatus : m1Taken ? 'taken' : 'missed',
       takenAt: m1Taken ? `${dateStr}T08:12:00Z` : undefined,
       takenByRole: 'senior',
     });
 
     // Med 2: Metformin 08:30 (morning dose)
     const m2mTaken = Math.random() > 0.08;
+    const m2mTodayStatus = isDoseDueToday('08:30') ? 'taken' : 'pending';
     logs.push({
       id: `log-m2-morn-${dateStr}`,
       seniorId: DEMO_SENIOR_ID,
@@ -229,7 +235,7 @@ export function generate30DaysDoseLogs(today: Date = new Date()): DoseLog[] {
       dosage: '500 mg',
       scheduledDate: dateStr,
       scheduledTime: '08:30',
-      status: offset === 0 ? 'taken' : m2mTaken ? 'taken' : 'missed',
+      status: offset === 0 ? m2mTodayStatus : m2mTaken ? 'taken' : 'missed',
       takenAt: m2mTaken ? `${dateStr}T08:35:00Z` : undefined,
       takenByRole: 'senior',
     });
@@ -237,7 +243,7 @@ export function generate30DaysDoseLogs(today: Date = new Date()): DoseLog[] {
     // Med 2: Metformin 20:30 (evening dose - DRIFT HERE!)
     let m2eTaken: boolean;
     if (offset === 0) {
-      // Today: pending or missed to demo escalation!
+      // Today: at 21:30 it is past 20:30, so missed due to routine drift! If before 20:30, pending.
       m2eTaken = false;
     } else if (isRecent6Days) {
       // Deliberate drop: 4 out of last 6 missed!
@@ -245,6 +251,8 @@ export function generate30DaysDoseLogs(today: Date = new Date()): DoseLog[] {
     } else {
       m2eTaken = Math.random() > 0.1; // 90%
     }
+
+    const m2eTodayStatus = isDoseDueToday('20:30') ? 'missed' : 'pending';
 
     logs.push({
       id: `log-m2-eve-${dateStr}`,
@@ -254,7 +262,7 @@ export function generate30DaysDoseLogs(today: Date = new Date()): DoseLog[] {
       dosage: '500 mg',
       scheduledDate: dateStr,
       scheduledTime: '20:30',
-      status: offset === 0 ? 'missed' : m2eTaken ? 'taken' : 'missed',
+      status: offset === 0 ? m2eTodayStatus : m2eTaken ? 'taken' : 'missed',
       takenAt: m2eTaken ? `${dateStr}T20:45:00Z` : undefined,
       takenByRole: m2eTaken ? 'senior' : undefined,
       notes: !m2eTaken && isRecent6Days ? 'Fell asleep early in front of TV' : undefined,
@@ -271,6 +279,8 @@ export function generate30DaysDoseLogs(today: Date = new Date()): DoseLog[] {
       m3Taken = Math.random() > 0.08; // 92%
     }
 
+    const m3TodayStatus = isDoseDueToday('21:00') ? 'missed' : 'pending';
+
     logs.push({
       id: `log-m3-${dateStr}`,
       seniorId: DEMO_SENIOR_ID,
@@ -279,7 +289,7 @@ export function generate30DaysDoseLogs(today: Date = new Date()): DoseLog[] {
       dosage: '10 mg',
       scheduledDate: dateStr,
       scheduledTime: '21:00',
-      status: offset === 0 ? 'missed' : m3Taken ? 'taken' : 'missed',
+      status: offset === 0 ? m3TodayStatus : m3Taken ? 'taken' : 'missed',
       takenAt: m3Taken ? `${dateStr}T21:10:00Z` : undefined,
       takenByRole: m3Taken ? 'senior' : undefined,
       notes: !m3Taken && isRecent6Days ? 'Forgotten before sleep' : undefined,
@@ -287,6 +297,7 @@ export function generate30DaysDoseLogs(today: Date = new Date()): DoseLog[] {
 
     // Med 4: Calcium + D3 13:00
     const m4Taken = Math.random() > 0.1;
+    const m4TodayStatus = isDoseDueToday('13:00') ? 'taken' : 'pending';
     logs.push({
       id: `log-m4-${dateStr}`,
       seniorId: DEMO_SENIOR_ID,
@@ -295,13 +306,14 @@ export function generate30DaysDoseLogs(today: Date = new Date()): DoseLog[] {
       dosage: '500 mg / 400 IU',
       scheduledDate: dateStr,
       scheduledTime: '13:00',
-      status: offset === 0 ? 'taken' : m4Taken ? 'taken' : 'missed',
+      status: offset === 0 ? m4TodayStatus : m4Taken ? 'taken' : 'missed',
       takenAt: m4Taken ? `${dateStr}T13:20:00Z` : undefined,
       takenByRole: 'caretaker',
     });
 
     // Med 5: Glimepiride 08:00
     const m5Taken = Math.random() > 0.06;
+    const m5TodayStatus = isDoseDueToday('08:00') ? 'taken' : 'pending';
     logs.push({
       id: `log-m5-${dateStr}`,
       seniorId: DEMO_SENIOR_ID,
@@ -310,7 +322,7 @@ export function generate30DaysDoseLogs(today: Date = new Date()): DoseLog[] {
       dosage: '1 mg',
       scheduledDate: dateStr,
       scheduledTime: '08:00',
-      status: offset === 0 ? 'taken' : m5Taken ? 'taken' : 'missed',
+      status: offset === 0 ? m5TodayStatus : m5Taken ? 'taken' : 'missed',
       takenAt: m5Taken ? `${dateStr}T08:05:00Z` : undefined,
       takenByRole: 'senior',
     });

@@ -281,7 +281,7 @@ export const CareContinuityScoreView: React.FC = () => {
               30-Day Continuity Score Trend & Routine Drift Visualization
             </h4>
             <p className="text-xs text-slate-500">
-              Notice the visible stability in days 1–24 (~90 pts), and deliberate slip in the last 6 days (~76 pts)
+              Baseline stability across days 1–24 (~90 pts), reflecting the recent slip to {continuityScore.overall} pts ({continuityScore.pointChange7d > 0 ? `+${continuityScore.pointChange7d}` : `${continuityScore.pointChange7d}`} pts over last 7 days)
             </p>
           </div>
           <div className="flex items-center gap-3 text-xs">

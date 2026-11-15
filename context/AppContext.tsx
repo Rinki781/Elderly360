@@ -73,6 +73,8 @@ interface AppContextType {
   medicalRecords: MedicalRecord[];
   addMedicalRecord: (record: Omit<MedicalRecord, 'id'>) => void;
   resetToDemoSeed: () => void;
+  demoTime: { hours: number; minutes: number };
+  formattedDemoTime: string;
   isSimulatingTime: boolean;
   toastMessage: string | null;
   showToast: (msg: string) => void;
@@ -92,9 +94,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [notifications, setNotifications] = useState<NotificationItem[]>(DEMO_NOTIFICATIONS);
   const [escalationEvent, setEscalationEvent] = useState<EscalationLadderEvent | null>(DEMO_ESCALATION_EVENT);
   const [medicalRecords, setMedicalRecords] = useState<MedicalRecord[]>(DEMO_MEDICAL_RECORDS);
+  const [demoTime, setDemoTime] = useState<{ hours: number; minutes: number }>({ hours: 21, minutes: 30 });
   const [isSimulatingTime, setIsSimulatingTime] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
+
+  const formattedDemoTime = `${demoTime.hours % 12 === 0 ? 12 : demoTime.hours % 12}:${String(
+    demoTime.minutes
+  ).padStart(2, '0')} ${demoTime.hours >= 12 ? 'PM' : 'AM'}`;
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -163,7 +170,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   ]);
 
   const resetToDemoSeed = () => {
-    const initialLogs = generate30DaysDoseLogs();
+    setDemoTime({ hours: 21, minutes: 30 });
+    const initialLogs = generate30DaysDoseLogs(new Date(), 21, 30);
     const initialTasks = generate30DaysCareTasks();
     setMedicines(DEMO_MEDICINES);
     setDoseLogs(initialLogs);
@@ -316,9 +324,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
-  // Today's Dose Logs filter
+  // Today's Dose Logs filter (chronologically sorted by scheduled dose time)
   const todayStr = formatDate(new Date());
-  const todayDoseLogs = doseLogs.filter((l) => l.scheduledDate === todayStr);
+  const todayDoseLogs = doseLogs
+    .filter((l) => l.scheduledDate === todayStr)
+    .sort((a, b) => a.scheduledTime.localeCompare(b.scheduledTime));
 
   // Today's Tasks
   const todayTasks = careTasks.filter((t) => t.id.includes(todayStr));
@@ -516,18 +526,42 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     showToast('Escalation resolved: dose verified & logged.');
   };
 
-  // "Simulate Time" button fast-forwards missed evening dose to demonstrate the escalation ladder
+  // "Simulate Time" button advances demo clock, updates doses and triggers escalation
   const simulateTimeMissedDose = () => {
     setIsSimulatingTime(true);
-    // Find evening dose in today's logs or create a missed dose
-    const eveningMed = todayDoseLogs.find((l) => l.scheduledTime >= '20:00') || todayDoseLogs[0];
-    if (eveningMed) {
-      setDoseLogs((prev) =>
-        prev.map((log) => (log.id === eveningMed.id ? { ...log, status: 'missed' } : log))
-      );
+
+    // Advance clock by 30 minutes
+    let newMinutes = demoTime.minutes + 30;
+    let newHours = demoTime.hours;
+    if (newMinutes >= 60) {
+      newHours = (newHours + 1) % 24;
+      newMinutes %= 60;
     }
+    const updatedDemoTime = { hours: newHours, minutes: newMinutes };
+    setDemoTime(updatedDemoTime);
+
+    const timeStr = `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(2, '0')}`;
+    const formatted = `${newHours % 12 === 0 ? 12 : newHours % 12}:${String(newMinutes).padStart(2, '0')} ${
+      newHours >= 12 ? 'PM' : 'AM'
+    }`;
+
+    // Mark any pending doses scheduled up to the new demo time as missed
+    setDoseLogs((prev) =>
+      prev.map((log) => {
+        if (log.scheduledDate === todayStr && log.status === 'pending' && log.scheduledTime <= timeStr) {
+          return {
+            ...log,
+            status: 'missed',
+            notes: 'Overdue: missed as demo time advanced past dose window',
+          };
+        }
+        return log;
+      })
+    );
 
     advanceEscalationLadder();
+
+    showToast(`Advanced demo clock to ${formatted}. Escalation ladder updated!`);
 
     setTimeout(() => {
       setIsSimulatingTime(false);
@@ -537,6 +571,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   return (
     <AppContext.Provider
       value={{
+        demoTime,
+        formattedDemoTime,
         currentUser,
         currentRole: currentUser.role,
         switchRole,
