@@ -7,23 +7,31 @@ import { LandingHero } from '@/components/LandingHero';
 import { Dashboard } from '@/components/Dashboard';
 import { InviteModal } from '@/components/InviteModal';
 import { NotificationsDrawer } from '@/components/NotificationsDrawer';
+import { EmergencySOSModal } from '@/components/EmergencySOSModal';
+import { SeniorVoiceAssistant } from '@/components/SeniorVoiceAssistant';
 import { HeartPulse, Award, Shield, ArrowUp } from 'lucide-react';
 
 export default function HomePage() {
   const { seniorProfile } = useApp();
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-  const [showLandingBanner, setShowLandingBanner] = useState(true);
+  const [isVoiceAssistantOpen, setIsVoiceAssistantOpen] = useState(false);
+  const [isSOSModalOpen, setIsSOSModalOpen] = useState(false);
 
   return (
-    <div className={`min-h-screen flex flex-col ${seniorProfile.seniorModeEnabled ? 'text-lg bg-amber-50/20' : ''}`}>
+    <div
+      className={`min-h-screen flex flex-col ${
+        seniorProfile.seniorModeEnabled ? 'text-lg bg-slate-950' : 'bg-slate-50'
+      }`}
+    >
       {/* Top Navbar */}
       <Navbar
         onOpenNotifications={() => setIsNotificationsOpen(true)}
+        onOpenSeniorVoice={() => setIsVoiceAssistantOpen(true)}
       />
 
-      {/* Hero / Pitch & Demo Launch Section */}
-      {showLandingBanner && (
+      {/* Hero / Pitch & Demo Launch Section (Hidden in Senior Mode for zero distraction) */}
+      {!seniorProfile.seniorModeEnabled && (
         <section id="landing">
           <LandingHero
             onEnterDashboard={() => {
@@ -36,46 +44,53 @@ export default function HomePage() {
       )}
 
       {/* Main App Container */}
-      <main id="dashboard" className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <main
+        id="dashboard"
+        className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8"
+      >
         <Dashboard
           onOpenInviteModal={() => setIsInviteModalOpen(true)}
           onOpenNotifications={() => setIsNotificationsOpen(true)}
+          onOpenVoiceAssistant={() => setIsVoiceAssistantOpen(true)}
+          onTriggerSOS={() => setIsSOSModalOpen(true)}
         />
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-slate-200 mt-16 py-8 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md bg-elder-600 text-white flex items-center justify-center font-bold">
-              <HeartPulse className="w-3.5 h-3.5" />
+      {!seniorProfile.seniorModeEnabled && (
+        <footer className="bg-white border-t border-slate-200 mt-16 py-8 text-center text-xs text-slate-500">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-md bg-elder-600 text-white flex items-center justify-center font-bold">
+                <HeartPulse className="w-3.5 h-3.5" />
+              </div>
+              <span className="font-extrabold text-slate-800">ELDERLY360</span>
+              <span>— Proactive Elderly Care Continuity</span>
             </div>
-            <span className="font-extrabold text-slate-800">ELDERLY360</span>
-            <span>— Proactive Elderly Care Continuity</span>
-          </div>
 
-          <div className="flex items-center gap-4 text-slate-500">
-            <button
-              onClick={() => setIsInviteModalOpen(true)}
-              className="hover:text-elder-700 transition"
-            >
-              Invite Family
-            </button>
-            <span>•</span>
-            <button
-              onClick={() => {
-                const el = document.getElementById('landing');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="hover:text-elder-700 transition"
-            >
-              Back to Overview
-            </button>
-            <span>•</span>
-            <span>7-Hour Hackathon Edition</span>
+            <div className="flex items-center gap-4 text-slate-500">
+              <button
+                onClick={() => setIsInviteModalOpen(true)}
+                className="hover:text-elder-700 transition"
+              >
+                Invite Family
+              </button>
+              <span>•</span>
+              <button
+                onClick={() => {
+                  const el = document.getElementById('landing');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="hover:text-elder-700 transition"
+              >
+                Back to Overview
+              </button>
+              <span>•</span>
+              <span>7-Hour Hackathon Edition</span>
+            </div>
           </div>
-        </div>
-      </footer>
+        </footer>
+      )}
 
       {/* Modals & Drawers */}
       <InviteModal
@@ -86,6 +101,20 @@ export default function HomePage() {
       <NotificationsDrawer
         isOpen={isNotificationsOpen}
         onClose={() => setIsNotificationsOpen(false)}
+      />
+
+      <EmergencySOSModal
+        isOpen={isSOSModalOpen}
+        onClose={() => setIsSOSModalOpen(false)}
+      />
+
+      <SeniorVoiceAssistant
+        isOpen={isVoiceAssistantOpen}
+        onClose={() => setIsVoiceAssistantOpen(false)}
+        onTriggerSOS={() => {
+          setIsVoiceAssistantOpen(false);
+          setIsSOSModalOpen(true);
+        }}
       />
     </div>
   );

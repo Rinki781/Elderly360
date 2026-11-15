@@ -7,6 +7,13 @@ import { TaskManager } from './TaskManager';
 import { CareContinuityScoreView } from './CareContinuityScoreView';
 import { RoutineDriftView } from './RoutineDriftView';
 import { EscalationLadderView } from './EscalationLadderView';
+import { PrivacyConsentManager } from './PrivacyConsentManager';
+import { SeniorModeView } from './SeniorModeView';
+import { DoctorLocatorView } from './DoctorLocatorView';
+import { AppointmentManager } from './AppointmentManager';
+import { CarePassportView } from './CarePassportView';
+import { DoctorVisitSummaryView } from './DoctorVisitSummaryView';
+import { Appointment } from '@/types';
 import {
   HeartPulse,
   Activity,
@@ -22,17 +29,25 @@ import {
   TrendingDown,
   Sparkles,
   Zap,
-  TrendingUp,
+  Lock,
+  FileText,
+  Hospital,
+  AlertOctagon,
+  Volume2,
 } from 'lucide-react';
 
 interface DashboardProps {
   onOpenInviteModal: () => void;
   onOpenNotifications: () => void;
+  onOpenVoiceAssistant: () => void;
+  onTriggerSOS: () => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
   onOpenInviteModal,
   onOpenNotifications,
+  onOpenVoiceAssistant,
+  onTriggerSOS,
 }) => {
   const {
     currentUser,
@@ -47,8 +62,29 @@ export const Dashboard: React.FC<DashboardProps> = ({
   } = useApp();
 
   const [activeTab, setActiveTab] = useState<
-    'overview' | 'score' | 'drift' | 'escalation' | 'meds' | 'tasks'
+    | 'overview'
+    | 'score'
+    | 'drift'
+    | 'escalation'
+    | 'meds'
+    | 'tasks'
+    | 'passport'
+    | 'appointments'
+    | 'locator'
+    | 'privacy'
   >('overview');
+
+  const [selectedApptForSummary, setSelectedApptForSummary] = useState<Appointment | null>(null);
+
+  // If Senior Mode is enabled, render the high-contrast simplified interface
+  if (seniorProfile.seniorModeEnabled) {
+    return (
+      <SeniorModeView
+        onOpenVoiceAssistant={onOpenVoiceAssistant}
+        onTriggerSOS={onTriggerSOS}
+      />
+    );
+  }
 
   // Adherence calculation for today
   const totalDoses = todayDoseLogs.length;
@@ -63,7 +99,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
       {/* Role Banner / Context */}
       <div className="bg-gradient-to-r from-slate-900 via-navy-900 to-slate-800 text-white p-5 sm:p-6 rounded-2xl shadow-lg border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-elder-500 to-teal-400 flex items-center justify-center text-white text-2xl font-black shadow-md shadow-elder-500/30">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-elder-500 to-teal-400 flex items-center justify-center text-white text-2xl font-black shadow-md shadow-elder-500/30 shrink-0">
             {currentUser.role === 'senior' ? '👴' : currentUser.role === 'family' ? '👨‍👧' : '🩺'}
           </div>
 
@@ -91,7 +127,25 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={onTriggerSOS}
+            className="px-3.5 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-black rounded-xl shadow-md transition flex items-center gap-1.5 active:scale-95"
+            title="Trigger Emergency SOS Beacon"
+          >
+            <AlertOctagon className="w-3.5 h-3.5 animate-pulse" />
+            <span>Emergency SOS</span>
+          </button>
+
+          <button
+            onClick={onOpenVoiceAssistant}
+            className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-elder-300 text-xs font-bold rounded-xl border border-slate-700 transition flex items-center gap-1.5"
+            title="Open Web Speech Voice Assistant (Hindi / English)"
+          >
+            <Volume2 className="w-3.5 h-3.5 text-elder-400" />
+            <span>Voice Assistant</span>
+          </button>
+
           <button
             onClick={onOpenInviteModal}
             className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl border border-slate-700 transition flex items-center gap-1.5"
@@ -265,74 +319,122 @@ export const Dashboard: React.FC<DashboardProps> = ({
       <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none border-b border-slate-200">
         <button
           onClick={() => setActiveTab('overview')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
             activeTab === 'overview'
               ? 'bg-slate-900 text-white shadow-xs'
               : 'text-slate-600 hover:bg-slate-100'
           }`}
         >
-          <Calendar className="w-4 h-4" />
-          <span>Today&apos;s Live Schedule</span>
+          <Calendar className="w-3.5 h-3.5" />
+          <span>Today&apos;s Schedule</span>
         </button>
 
         <button
           onClick={() => setActiveTab('score')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
             activeTab === 'score'
               ? 'bg-slate-900 text-white shadow-xs'
               : 'text-slate-600 hover:bg-slate-100'
           }`}
         >
-          <Activity className="w-4 h-4 text-elder-500" />
-          <span>Care Continuity Score (30d)</span>
+          <Activity className="w-3.5 h-3.5 text-elder-500" />
+          <span>Care Score (30d)</span>
         </button>
 
         <button
           onClick={() => setActiveTab('drift')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
             activeTab === 'drift'
               ? 'bg-slate-900 text-white shadow-xs'
               : 'text-slate-600 hover:bg-slate-100'
           }`}
         >
-          <TrendingDown className="w-4 h-4 text-amber-500" />
+          <TrendingDown className="w-3.5 h-3.5 text-amber-500" />
           <span>Routine Drift ({driftAlerts.length})</span>
         </button>
 
         <button
           onClick={() => setActiveTab('escalation')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
             activeTab === 'escalation'
               ? 'bg-slate-900 text-white shadow-xs'
               : 'text-slate-600 hover:bg-slate-100'
           }`}
         >
-          <ShieldAlert className="w-4 h-4 text-rose-500" />
+          <ShieldAlert className="w-3.5 h-3.5 text-rose-500" />
           <span>Escalation Ladder</span>
         </button>
 
         <button
           onClick={() => setActiveTab('meds')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
             activeTab === 'meds'
               ? 'bg-slate-900 text-white shadow-xs'
               : 'text-slate-600 hover:bg-slate-100'
           }`}
         >
-          <Pill className="w-4 h-4" />
-          <span>Medications & Refill</span>
+          <Pill className="w-3.5 h-3.5 text-teal-500" />
+          <span>Medications & Refills</span>
         </button>
 
         <button
           onClick={() => setActiveTab('tasks')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
             activeTab === 'tasks'
               ? 'bg-slate-900 text-white shadow-xs'
               : 'text-slate-600 hover:bg-slate-100'
           }`}
         >
-          <CheckCircle2 className="w-4 h-4" />
-          <span>Care Tasks</span>
+          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+          <span>Care Tasks & Vitals</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('appointments')}
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+            activeTab === 'appointments'
+              ? 'bg-slate-900 text-white shadow-xs'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+          <span>Doctor Visits & AI Brief</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('passport')}
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+            activeTab === 'passport'
+              ? 'bg-slate-900 text-white shadow-xs'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <FileText className="w-3.5 h-3.5 text-sky-500" />
+          <span>Care Passport (QR)</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('locator')}
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+            activeTab === 'locator'
+              ? 'bg-slate-900 text-white shadow-xs'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <Hospital className="w-3.5 h-3.5 text-teal-600" />
+          <span>Nearby Doctors & Maps</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('privacy')}
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+            activeTab === 'privacy'
+              ? 'bg-slate-900 text-white shadow-xs'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <Lock className="w-3.5 h-3.5 text-indigo-500" />
+          <span>Privacy & Consent</span>
         </button>
       </div>
 
@@ -356,6 +458,32 @@ export const Dashboard: React.FC<DashboardProps> = ({
       {activeTab === 'meds' && <MedicationManager />}
 
       {activeTab === 'tasks' && <TaskManager />}
+
+      {activeTab === 'appointments' && (
+        <div className="space-y-6">
+          <DoctorVisitSummaryView
+            appointment={selectedApptForSummary}
+          />
+          <AppointmentManager
+            onOpenDoctorVisitSummary={(appt) => {
+              setSelectedApptForSummary(appt);
+              window.scrollTo({ top: 400, behavior: 'smooth' });
+            }}
+          />
+        </div>
+      )}
+
+      {activeTab === 'passport' && <CarePassportView />}
+
+      {activeTab === 'locator' && (
+        <DoctorLocatorView
+          onSelectFacilityForAppointment={(fac) => {
+            setActiveTab('appointments');
+          }}
+        />
+      )}
+
+      {activeTab === 'privacy' && <PrivacyConsentManager />}
     </div>
   );
 };
