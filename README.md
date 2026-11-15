@@ -74,48 +74,6 @@ flowchart TD
 
 ---
 
-## 🚀 Key Features
-
-### 🌟 Phase 1: Core Care Hub
-- **Judging Demo Mode**: Instant 1-click role switcher on the landing page between **Senior (Ramesh Sharma, 72)**, **Family (Aarav Sharma - Son)**, and **Caretaker (Priya Singh - Nurse)** with **zero signup required**.
-- **30-Day Seed Dataset**: Preloaded with 30 days of telemetry with a deliberate evening medication adherence drop in the last 6 days to immediately demonstrate routine drift.
-- **Medication Management**: Add/edit prescriptions, mark doses taken/skipped/snoozed, dosage history, pill inventory, and predictive refill calculation (`Stock ÷ Daily Usage` $\rightarrow$ "Runs out in X days").
-- **Daily Care Tasks**: Track walks, meals, hydration, and blood pressure/vitals logging.
-- **Family & Caretaker Live Dashboard**: Real-time status of today's schedule, completion bars, and care circle invite codes (`RAMESH-360`).
-
-### 🧬 Phase 2: Care Intelligence Engine
-- **Care Continuity Score (0–100)**: Transparent calculation with weight disclosure and 30-day Recharts area chart.
-- **Explainable Insights**: Plain-English reasons for score drops (e.g. *"Score fell 14 points: 4 of the last 6 evening doses missed, 2 walks skipped"*).
-- **Routine Drift Detection**: Automatically compares the last 7 days vs the prior 21-day baseline. Generates drift cards when completion drops $>30\%$.
-- **Automated Escalation Ladder**: Missed dose triggers a 4-step progressive timeline. Includes a **Simulate Time** button that fast-forwards missed doses in seconds for live judging demo!
-- **Notification Feed**: Role-specific alert feed with real-time browser badges.
-
-### 🛡️ Phase 3: Senior-Controlled Privacy & Accessibility
-- **Consent Matrix**: Senior toggles what each family member and nurse can see across 5 categories (`medicines`, `score`, `location`, `records`, `appointments`). Enforced at the data layer!
-- **Simplified Senior Mode**: Giant text, high-contrast dark theme, and **one primary action per screen** (*"Take my 8:00 PM Metformin"*).
-- **Bilingual Voice Assistant (Web Speech API)**: Speaks reminders via `speechSynthesis` and recognizes Hindi and English voice commands (*"Dawa le li"*, *"What is my next medicine"*, *"Call my son"*, *"Emergency SOS"*).
-
-### 🏥 Phase 4: Healthcare Ecosystem
-- **Emergency SOS**: Big tactile button that captures live coordinates using browser Geolocation API and alerts family & caretakers with one-tap emergency call shortcuts (Ambulance 1066, Police 112).
-- **Doctor & Hospital Locator**: Leaflet + OpenStreetMap locator for nearby cardiologists, endocrinologists, orthopedics, and 24x7 emergency centers.
-- **Appointment Scheduler**: Book, reschedule, cancel, and mark appointments attended (directly feeding the Care Continuity Score).
-- **Digital Care Passport**: Profile, conditions, allergies, active prescriptions, medical report upload, printable/PDF export view, and a paramedic emergency QR code.
-- **Gemini-Powered Clinical Summary**: Server-side call to Google Gemini (`/api/gemini`) synthesizing 30-day telemetry into a 1-page pre-visit doctor briefing and suggested questions in English or Hindi, plus a weekly care summary for families.
-
----
-
-## 🛠️ Tech Stack
-
-- **Framework**: Next.js 14 (App Router, Server Components + API Routes)
-- **Language**: TypeScript (Strict typing across all care entities)
-- **Styling**: Tailwind CSS (Accessible contrast, healthcare color palette)
-- **Data Visualizations**: Recharts (Responsive 30-day trend lines and areas)
-- **Voice & Speech**: Web Speech API (`SpeechRecognition` & `SpeechSynthesis`)
-- **Mapping**: Leaflet + OpenStreetMap (No API key required)
-- **AI Integration**: Google Gemini 1.5 Flash (`/api/gemini`) with deterministic fallback
-- **State & Storage**: Unified AppContext with local storage persistence and seed restoration
-
----
 
 ## 💻 Getting Started
 
